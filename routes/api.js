@@ -8,6 +8,8 @@
 
 'use strict';
 
+const Book = require('../models/books.js');
+
 module.exports = function (app) {
 
   app.route('/api/books')
@@ -16,9 +18,24 @@ module.exports = function (app) {
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
     })
     
-    .post(function (req, res){
+    .post(async (req, res) => {
       let title = req.body.title;
       //response will contain new book object including atleast _id and title
+      if (!title) {
+        res.json('missing required field title');
+      }
+
+      try {
+        const newBook = new Book({ title });
+        const savedBook = await newBook.save();
+        console.log(savedBook);
+        res.json({
+          _id: savedBook._id,
+          title: savedBook.title
+        });
+      } catch (err) {
+        res.status(500).json({ error: 'Cannot add new book' })
+      }
     })
     
     .delete(function(req, res){
