@@ -13,9 +13,15 @@ const Book = require('../models/books.js');
 module.exports = function (app) {
 
   app.route('/api/books')
-    .get(function (req, res){
+    .get(async (req, res) => {
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      try {
+        const books = await Book.find({}, '_id title commentcount');
+        return res.json(books);
+      } catch (e) {
+        res.status(500).json({ error: e });
+      }
     })
     
     .post(async (req, res) => {
