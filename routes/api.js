@@ -87,9 +87,16 @@ module.exports = function (app) {
       }
     })
     
-    .delete(function(req, res){
+    .delete(async (req, res) => {
       let bookid = req.params.id;
       //if successful response will be 'delete successful'
+      try {
+        const book = await Book.findByIdAndDelete(bookid);
+        if (!book) { return res.json('no book exists')};
+        return res.json('delete successful')
+      } catch(e) {
+        return res.json(e);
+      }
     });
   
 };
